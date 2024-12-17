@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"take-out/common"
+	"take-out/common/e"
 	"take-out/common/enum"
 	"take-out/internal/api/request"
 	"take-out/internal/api/response"
@@ -23,8 +24,9 @@ type IDishService interface {
 }
 
 type DishServiceImpl struct {
-	repo           repository.DishRepo
-	dishFlavorRepo repository.DishFlavorRepo
+	repo            repository.DishRepo
+	dishFlavorRepo  repository.DishFlavorRepo
+	setMealDishRepo repository.SetMealDishRepo
 }
 
 func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
@@ -36,6 +38,14 @@ func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 			dishId, _ := strconv.ParseUint(idStr, 10, 64)
 			// 开启事务
 			transaction := d.repo.Transaction(ctx)
+			if err := transaction.Begin(); err != nil {
+				return err
+			}
+			list, _ := d.setMealDishRepo.GetBySetDishId(transaction, dishId)
+			if len(list) > 0 {
+				return e.Error_DISH_BE_RELATED_BY_SETMEAL
+			}
+
 			defer func() {
 				if r := recover(); r != nil {
 					transaction.Rollback()
@@ -51,7 +61,7 @@ func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 			if err != nil {
 				return err
 			}
-			return transaction.Commit().Error
+			return transaction.Commit()
 		}()
 		if err != nil {
 			return err
@@ -74,6 +84,9 @@ func (d *DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO)
 	}
 	// 开启事务
 	transaction := d.repo.Transaction(ctx)
+	if err := transaction.Begin(); err != nil {
+		return err
+	}
 	defer func() {
 		if r := recover(); r != nil {
 			transaction.Rollback()
@@ -96,7 +109,7 @@ func (d *DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO)
 		}
 	}
 
-	return transaction.Commit().Error
+	return transaction.Commit()
 }
 
 func (d *DishServiceImpl) OnOrClose(ctx context.Context, id uint64, status int) error {
@@ -168,6 +181,9 @@ func (d *DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Di
 	}
 	// 开启事务，出现问题直接回滚
 	transaction := d.repo.Transaction(ctx)
+	if err := transaction.Begin(); err != nil {
+		return err
+	}
 	defer func() {
 		if r := recover(); r != nil {
 			transaction.Rollback()
@@ -185,9 +201,9 @@ func (d *DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Di
 	if err := d.dishFlavorRepo.InsertBatch(transaction, dto.Flavors); err != nil {
 		return err
 	}
-	return transaction.Commit().Error
+	return transaction.Commit()
 }
 
-func NewDishService(repo repository.DishRepo, dishFlavorRepo repository.DishFlavorRepo) IDishService {
-	return &DishServiceImpl{repo: repo, dishFlavorRepo: dishFlavorRepo}
+func NewDishService(repo repository.DishRepo, dishFlavorRepo repository.DishFlavorRepo, setMealDishRepo repository.SetMealDishRepo) IDishService {
+	return &DishServiceImpl{repo: repo, dishFlavorRepo: dishFlavorRepo, setMealDishRepo: setMealDishRepo}
 }

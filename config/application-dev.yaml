@@ -50,7 +50,7 @@ localPath:
   # 本地磁盘地址
   uploadDir: upload/
   # 本地ip地址
-  imageHost: http://localhost/
+  imageHost: http://localhost:1234/
 
 wechat:
   appid: YouOption
