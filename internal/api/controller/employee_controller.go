@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"take-out/common"
@@ -10,6 +9,8 @@ import (
 	"take-out/global"
 	"take-out/internal/api/request"
 	"take-out/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type EmployeeController struct {
@@ -51,8 +52,7 @@ func (ec *EmployeeController) Login(ctx *gin.Context) {
 // Logout 员工退出
 func (ec *EmployeeController) Logout(ctx *gin.Context) {
 	code := e.SUCCESS
-	var err error
-	err = ec.service.Logout(ctx)
+	err := ec.service.Logout(ctx)
 	if err != nil {
 		code = e.ERROR
 		global.Log.Warn("EmployeeController login Error:", err.Error())
@@ -151,8 +151,7 @@ func (ec *EmployeeController) OnOrOff(ctx *gin.Context) {
 	code := e.SUCCESS
 	id, _ := strconv.ParseUint(ctx.Query("id"), 10, 64)
 	status, _ := strconv.Atoi(ctx.Param("status"))
-	var err error
-	err = ec.service.SetStatus(ctx, id, status)
+	err := ec.service.SetStatus(ctx, id, status)
 	if err != nil {
 		code = e.ERROR
 		global.Log.Warn("OnOrOff Status  Error:", err.Error())

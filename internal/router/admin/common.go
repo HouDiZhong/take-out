@@ -1,9 +1,10 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
 	"take-out/internal/api/controller"
 	"take-out/middle"
+
+	"github.com/gin-gonic/gin"
 )
 
 type CommonRouter struct{}
@@ -16,6 +17,13 @@ func (dr *CommonRouter) InitApiRouter(parent *gin.RouterGroup) {
 	// 依赖注入
 	commonCtrl := new(controller.CommonController)
 	{
-		privateRouter.POST("upload", commonCtrl.Upload)
+		privateRouter.POST("upload", commonCtrl.LocalUpload)
 	}
+
+	// 上传图片返回路径
+	uploadRouter := parent.Group("upload")
+	{
+		uploadRouter.GET("/:subdir/:filename", commonCtrl.LocalVisit)
+	}
+
 }

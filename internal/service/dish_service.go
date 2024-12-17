@@ -61,7 +61,7 @@ func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 }
 
 func (d *DishServiceImpl) Update(ctx context.Context, dto request.DishUpdateDTO) error {
-	price, _ := strconv.ParseFloat(dto.Price, 10)
+	price, _ := strconv.ParseFloat(dto.Price, 64)
 	dish := model.Dish{
 		Id:          dto.Id,
 		Name:        dto.Name,
@@ -156,7 +156,7 @@ func (d *DishServiceImpl) PageQuery(ctx context.Context, dto *request.DishPageQu
 
 func (d *DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.DishDTO) error {
 	// 1.构建dish数据
-	price, _ := strconv.ParseFloat(dto.Price, 10)
+	price, _ := strconv.ParseFloat(dto.Price, 64)
 	dish := model.Dish{
 		Id:          0,
 		Name:        dto.Name,
@@ -178,7 +178,7 @@ func (d *DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Di
 		return err
 	}
 	// 为口味数据附加菜品id
-	for i, _ := range dto.Flavors {
+	for i := range dto.Flavors {
 		dto.Flavors[i].DishId = dish.Id
 	}
 	// 3.使用返回的事务指针动态构建 dishFlavor，因为它只依附于动态返回的事务指针。

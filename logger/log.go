@@ -2,17 +2,18 @@ package logger
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"io"
 	"os"
+
+	"github.com/sirupsen/logrus"
 )
 
 type ILog interface {
-	Debug(args ...interface{})
-	Info(args ...interface{})
-	Warn(args ...interface{})
-	Error(args ...interface{})
-	Fatal(args ...interface{})
+	Debug(args ...any)
+	Info(args ...any)
+	Warn(args ...any)
+	Error(args ...any)
+	Fatal(args ...any)
 }
 
 type LLogger struct {
@@ -61,22 +62,22 @@ func NewLogger(level string, filePath string) ILog {
 	log.Infof("日志开启成功")
 	return &LLogger{logger: log}
 }
-func (l *LLogger) Debug(args ...interface{}) {
+func (l *LLogger) Debug(args ...any) {
 	l.logger.Debug(args...)
 }
 
-func (l *LLogger) Info(args ...interface{}) {
+func (l *LLogger) Info(args ...any) {
 	l.logger.Info(args...)
 }
 
-func (l *LLogger) Warn(args ...interface{}) {
+func (l *LLogger) Warn(args ...any) {
 	l.logger.Warn(args...)
 }
 
-func (l *LLogger) Error(args ...interface{}) {
+func (l *LLogger) Error(args ...any) {
 	l.logger.Error(args...)
 }
 
-func (l *LLogger) Fatal(args ...interface{}) {
+func (l *LLogger) Fatal(args ...any) {
 	l.logger.Fatal(args...)
 }

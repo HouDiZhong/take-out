@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // CustomPayload 自定义载荷继承原有接口并附带自己的字段

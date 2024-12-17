@@ -28,6 +28,28 @@ func (s SetMealDishDao) InsertBatch(transactions tx.Transaction, setmealDishs []
 	return err
 }
 
+func (s SetMealDishDao) DeledeBatch(transactions tx.Transaction, setmealDishs []model.SetMealDish) error {
+	var ids []uint64
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+	for _, sDish := range setmealDishs {
+		ids = append(ids, sDish.DishId)
+	}
+	err = db.Where("dish_id in ?", ids).Delete(&setmealDishs).Error
+	return err
+}
+
+func (s SetMealDishDao) DeledeSetMealBatch(transactions tx.Transaction, ids []string) error {
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+	err = db.Where("setmeal_id in ?", ids).Delete(&model.SetMealDish{}).Error
+	return err
+}
+
 func NewSetMealDishDao() repository.SetMealDishRepo {
 	return &SetMealDishDao{}
 }

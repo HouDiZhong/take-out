@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -44,6 +45,7 @@ type AllConfig struct {
 	Log        Log
 	Jwt        Jwt
 	AliOss     AliOss
+	LocalPath  LocalPath
 	Wechat     Wechat
 }
 
@@ -93,6 +95,11 @@ type AliOss struct {
 	AccessKeyId     string `mapstructure:"access_key_id"`
 	AccessKeySecret string `mapstructure:"access_key_secret"`
 	BucketName      string `mapstructure:"bucket_name"`
+}
+
+type LocalPath struct {
+	UploadDir string
+	ImageHost string
 }
 
 type Wechat struct {

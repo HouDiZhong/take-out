@@ -13,6 +13,11 @@ type SetMealDTO struct {
 	SetMealDishs []model.SetMealDish `json:"setmealDishes"` // 套餐菜品关系
 }
 
+type UpSetMealDTO struct {
+	Price float64 `json:"price"` // 套餐单价
+	SetMealDTO
+}
+
 type SetMealPageQueryDTO struct {
 	Page       int    `form:"page"`       // 分页查询的页数
 	PageSize   int    `form:"pageSize"`   // 分页查询的页容量

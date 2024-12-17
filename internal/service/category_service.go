@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"take-out/common"
+	"take-out/common/e"
 	"take-out/common/enum"
 	"take-out/internal/api/request"
 	"take-out/internal/model"
@@ -20,7 +21,8 @@ type ICategoryService interface {
 }
 
 type CategoryImpl struct {
-	repo repository.CategoryRepo
+	repo     repository.CategoryRepo
+	dishRepo repository.DishRepo
 }
 
 func (c *CategoryImpl) SetStatus(ctx context.Context, id uint64, status int) error {
@@ -44,6 +46,12 @@ func (c *CategoryImpl) Update(ctx context.Context, dto request.CategoryDTO) erro
 }
 
 func (c *CategoryImpl) DeleteById(ctx context.Context, id uint64) error {
+	// 根据分类id，查出分类下的菜品
+	list, _ := c.dishRepo.List(ctx, id)
+	// 如果分类下有菜品，不能删除分类
+	if len(list) > 0 {
+		return e.Error_CATEGORY_BE_RELATED_BY_DISH
+	}
 	err := c.repo.DeleteById(ctx, id)
 	return err
 }
@@ -72,6 +80,6 @@ func (c *CategoryImpl) AddCategory(ctx context.Context, dto request.CategoryDTO)
 	return err
 }
 
-func NewCategoryService(repo repository.CategoryRepo) ICategoryService {
-	return &CategoryImpl{repo: repo}
+func NewCategoryService(repo repository.CategoryRepo, dishRepo repository.DishRepo) ICategoryService {
+	return &CategoryImpl{repo: repo, dishRepo: dishRepo}
 }

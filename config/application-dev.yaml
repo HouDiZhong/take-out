@@ -7,7 +7,7 @@ datasource:
   host: 127.0.0.1
   port: 3306
   username: root
-  password: root
+  password: my-secret-pw
   db_name: sky_take_out
   config: charset=utf8mb4&parseTime=True&loc=Local
 
@@ -44,6 +44,13 @@ alioss:
   access_key_id: YouOption
   access_key_secret: YouOption
   bucket_name: YouOption
+
+  # 图片地址和ip
+localPath:
+  # 本地磁盘地址
+  uploadDir: upload/
+  # 本地ip地址
+  imageHost: http://localhost/
 
 wechat:
   appid: YouOption

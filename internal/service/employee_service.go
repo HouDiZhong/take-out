@@ -60,7 +60,7 @@ func (ei *EmployeeImpl) PageQuery(ctx context.Context, dto request.EmployeePageQ
 	// 屏蔽敏感信息
 	if employees, ok := pageResult.Records.([]model.Employee); ok {
 		// 替换敏感信息
-		for key, _ := range employees {
+		for key := range employees {
 			employees[key].Password = "****"
 			employees[key].IdNumber = "****"
 			employees[key].Phone = "****"
@@ -98,7 +98,6 @@ func (ei *EmployeeImpl) EditPassword(ctx context.Context, employeeEdit request.E
 	if err != nil {
 		return err
 
-
 	}
 	// 校验用户老密码
 	if employee == nil {
@@ -109,7 +108,7 @@ func (ei *EmployeeImpl) EditPassword(ctx context.Context, employeeEdit request.E
 		return e.Error_PASSWORD_ERROR
 	}
 	// 修改员工密码
-	newHashPassword := utils.MD5V(employeeEdit.NewPassword, "", 0)  // 使用新密码生成哈希值
+	newHashPassword := utils.MD5V(employeeEdit.NewPassword, "", 0) // 使用新密码生成哈希值
 	err = ei.repo.Update(ctx, model.Employee{
 		Id:       employeeEdit.EmpId,
 		Password: newHashPassword,
