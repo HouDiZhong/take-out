@@ -2,25 +2,36 @@ package dao
 
 import (
 	"context"
-	"gorm.io/gorm"
 	"take-out/common"
+	"take-out/global/tx"
 	"take-out/internal/api/request"
 	"take-out/internal/api/response"
 	"take-out/internal/model"
 	"take-out/internal/repository"
+
+	"gorm.io/gorm"
 )
 
 type DishDao struct {
 	db *gorm.DB
 }
 
-func (dd *DishDao) Delete(db *gorm.DB, id uint64) error {
-	err := db.Delete(&model.Dish{Id: id}).Error
+func (dd *DishDao) Delete(transactions tx.Transaction, id uint64) error {
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+
+	err = db.Delete(&model.Dish{Id: id}).Error
 	return err
 }
 
-func (dd *DishDao) Update(db *gorm.DB, dish model.Dish) error {
-	err := db.Model(&dish).Updates(dish).Error
+func (dd *DishDao) Update(transactions tx.Transaction, dish model.Dish) error {
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+	err = db.Model(&dish).Updates(dish).Error
 	return err
 }
 
@@ -73,13 +84,17 @@ func (dd *DishDao) PageQuery(ctx context.Context, dto *request.DishPageQueryDTO)
 }
 
 // Transaction 开启事务
-func (dd *DishDao) Transaction(ctx context.Context) *gorm.DB {
-	return dd.db.WithContext(ctx).Begin()
+func (dd *DishDao) Transaction(ctx context.Context) tx.Transaction {
+	return tx.NewGormTransaction(dd.db, ctx)
 }
 
 // Insert 使用事务指针进行插入菜品数据
-func (dd *DishDao) Insert(transaction *gorm.DB, dish *model.Dish) error {
-	err := transaction.Create(dish).Error
+func (dd *DishDao) Insert(transactions tx.Transaction, dish *model.Dish) error {
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+	err = db.Create(dish).Error
 	return err
 }
 

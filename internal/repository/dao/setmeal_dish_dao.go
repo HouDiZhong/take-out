@@ -19,6 +19,16 @@ func (s SetMealDishDao) GetBySetMealId(transactions tx.Transaction, SetMealId ui
 	return dishList, err
 }
 
+func (s SetMealDishDao) GetBySetDishId(transactions tx.Transaction, DishId uint64) ([]model.SetMealDish, error) {
+	var dishList []model.SetMealDish
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return nil, err
+	}
+	err = db.Where("dish_id = ?", DishId).Find(&dishList).Error
+	return dishList, err
+}
+
 func (s SetMealDishDao) InsertBatch(transactions tx.Transaction, setmealDishs []model.SetMealDish) error {
 	db, err := tx.GetGormDB(transactions)
 	if err != nil {

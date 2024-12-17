@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -10,6 +9,8 @@ import (
 	"take-out/global"
 	"take-out/internal/api/request"
 	"take-out/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type DishController struct {
@@ -151,7 +152,7 @@ func (dc *DishController) Delete(ctx *gin.Context) {
 		slog.Warn("删除菜品信息失败！", "Err:", err.Error())
 		ctx.JSON(http.StatusOK, common.Result{
 			Code: code,
-			Msg:  e.GetMsg(code),
+			Msg:  err.Error(),
 		})
 		return
 	}
