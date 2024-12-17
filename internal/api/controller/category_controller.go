@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"take-out/common"
@@ -9,6 +8,8 @@ import (
 	"take-out/global"
 	"take-out/internal/api/request"
 	"take-out/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type CategoryController struct {
@@ -73,6 +74,7 @@ func (cc *CategoryController) List(ctx *gin.Context) {
 func (cc *CategoryController) DeleteById(ctx *gin.Context) {
 	code := e.SUCCESS
 	id, _ := strconv.ParseUint(ctx.Query("id"), 10, 64)
+
 	err := cc.service.DeleteById(ctx, id)
 	if err != nil {
 		code = e.ERROR
@@ -80,6 +82,7 @@ func (cc *CategoryController) DeleteById(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, common.Result{
 		Code: code,
+		Msg:  err.Error(),
 	})
 }
 

@@ -34,7 +34,7 @@ func NewMySlog(setLevel string, filePath string) ILog {
 	return &MySLog{slog: log}
 }
 
-func (s *MySLog) Debug(args ...interface{}) {
+func (s *MySLog) Debug(args ...any) {
 	if len(args) == 1 {
 		s.slog.Debug(args[0].(string))
 	} else if len(args) > 1 {
@@ -42,7 +42,7 @@ func (s *MySLog) Debug(args ...interface{}) {
 	}
 }
 
-func (s *MySLog) Info(args ...interface{}) {
+func (s *MySLog) Info(args ...any) {
 	if len(args) == 1 {
 		s.slog.Info(args[0].(string))
 	} else if len(args) > 1 {
@@ -50,7 +50,7 @@ func (s *MySLog) Info(args ...interface{}) {
 	}
 }
 
-func (s *MySLog) Warn(args ...interface{}) {
+func (s *MySLog) Warn(args ...any) {
 	if len(args) == 1 {
 		s.slog.Warn(args[0].(string))
 	} else if len(args) > 1 {
@@ -58,7 +58,7 @@ func (s *MySLog) Warn(args ...interface{}) {
 	}
 }
 
-func (s *MySLog) Error(args ...interface{}) {
+func (s *MySLog) Error(args ...any) {
 	if len(args) == 1 {
 		s.slog.Error(args[0].(string))
 	} else if len(args) > 1 {
@@ -66,7 +66,7 @@ func (s *MySLog) Error(args ...interface{}) {
 	}
 }
 
-func (s *MySLog) Fatal(args ...interface{}) {
+func (s *MySLog) Fatal(args ...any) {
 	if len(args) == 1 {
 		s.slog.Info(args[0].(string))
 	} else if len(args) > 1 {

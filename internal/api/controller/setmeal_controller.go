@@ -1,14 +1,16 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"strings"
 	"take-out/common"
 	"take-out/common/e"
 	"take-out/global"
 	"take-out/internal/api/request"
 	"take-out/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SetMealController struct {
@@ -39,6 +41,49 @@ func (sc *SetMealController) SaveWithDish(ctx *gin.Context) {
 		Code: code,
 		Msg:  e.GetMsg(code),
 	})
+}
+
+// UpdateWithDish 更新套餐和菜品信息
+func (sc *SetMealController) UpdateWithDish(ctx *gin.Context) {
+	code := e.SUCCESS
+	var setmealDTO request.UpSetMealDTO
+	err := ctx.Bind(&setmealDTO)
+	if err != nil {
+		global.Log.Debug("SaveWithDish更新套餐和菜品信息 结构体解析失败！", "Err:", err.Error())
+		e.Send(ctx, e.ERROR)
+		return
+	}
+	err = sc.service.UpdateWithDish(ctx, setmealDTO)
+	if err != nil {
+		global.Log.Warn("SaveWithDish更新套餐和菜品信息！", "Err:", err.Error())
+		e.Send(ctx, e.ERROR)
+		return
+	}
+	ctx.JSON(http.StatusOK, common.Result{
+		Code: code,
+		Msg:  e.GetMsg(code),
+	})
+}
+
+// DeleteWithDish 删除套餐和菜品信息
+func (sc *SetMealController) DeleteWithDish(ctx *gin.Context) {
+	code := e.SUCCESS
+	id := ctx.Query("ids")
+	ids := strings.Split(id, ",")
+
+	err := sc.service.DeleteWithDish(ctx, ids)
+
+	if err != nil {
+		global.Log.Warn("SaveWithDish删除套餐和菜品信息！", "Err:", err.Error())
+		e.Send(ctx, e.ERROR)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, common.Result{
+		Code: code,
+		Msg:  e.GetMsg(code),
+	})
+
 }
 
 // PageQuery 套餐分页查询

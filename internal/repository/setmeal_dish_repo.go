@@ -7,5 +7,7 @@ import (
 
 type SetMealDishRepo interface {
 	InsertBatch(db tx.Transaction, setmealDishs []model.SetMealDish) error
+	DeledeBatch(db tx.Transaction, setmealDishs []model.SetMealDish) error
+	DeledeSetMealBatch(db tx.Transaction, ids []string) error
 	GetBySetMealId(db tx.Transaction, SetMealId uint64) ([]model.SetMealDish, error)
 }

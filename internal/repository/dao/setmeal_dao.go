@@ -2,13 +2,14 @@ package dao
 
 import (
 	"context"
-	"gorm.io/gorm"
 	"take-out/common"
 	"take-out/global/tx"
 	"take-out/internal/api/request"
 	"take-out/internal/api/response"
 	"take-out/internal/model"
 	"take-out/internal/repository"
+
+	"gorm.io/gorm"
 )
 
 type SetMealDao struct {
@@ -71,6 +72,25 @@ func (s *SetMealDao) Insert(transactions tx.Transaction, meal *model.SetMeal) er
 		return err
 	}
 	err = db.Create(&meal).Error
+	return err
+}
+
+func (s *SetMealDao) Update(transactions tx.Transaction, meal *model.SetMeal) error {
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+	err = db.Model(&meal).Updates(&meal).Error
+	return err
+}
+
+func (s *SetMealDao) Delete(transactions tx.Transaction, ids []string) error {
+	db, err := tx.GetGormDB(transactions)
+	if err != nil {
+		return err
+	}
+
+	err = db.Where("setmeal.id in ?", ids).Delete(&model.SetMeal{}).Error
 	return err
 }
 

@@ -1,12 +1,13 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
 	"take-out/global"
 	"take-out/internal/api/controller"
 	"take-out/internal/repository/dao"
 	"take-out/internal/service"
 	"take-out/middle"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SetMealRouter struct{}
@@ -22,6 +23,8 @@ func (sr *SetMealRouter) InitApiRouter(parent *gin.RouterGroup) {
 	)
 	{
 		privateRouter.POST("", setmealCtrl.SaveWithDish)
+		privateRouter.PUT("", setmealCtrl.UpdateWithDish)
+		privateRouter.DELETE("", setmealCtrl.DeleteWithDish)
 		privateRouter.GET("/page", setmealCtrl.PageQuery)
 		privateRouter.GET("/:id", setmealCtrl.GetByIdWithDish)
 		privateRouter.POST("/status/:status", setmealCtrl.OnOrClose)

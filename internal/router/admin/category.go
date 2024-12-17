@@ -1,12 +1,13 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
 	"take-out/global"
 	"take-out/internal/api/controller"
 	"take-out/internal/repository/dao"
 	"take-out/internal/service"
 	"take-out/middle"
+
+	"github.com/gin-gonic/gin"
 )
 
 type CategoryRouter struct{}
@@ -18,7 +19,7 @@ func (cr *CategoryRouter) InitApiRouter(parent *gin.RouterGroup) {
 	privateRouter.Use(middle.VerifyJWTAdmin())
 	// 依赖注入
 	categoryCtrl := controller.NewCategoryController(
-		service.NewCategoryService(dao.NewCategoryDao(global.DB)),
+		service.NewCategoryService(dao.NewCategoryDao(global.DB), dao.NewDishRepo(global.DB)),
 	)
 	{
 		privateRouter.POST("", categoryCtrl.AddCategory)
@@ -27,6 +28,5 @@ func (cr *CategoryRouter) InitApiRouter(parent *gin.RouterGroup) {
 		privateRouter.DELETE("", categoryCtrl.DeleteById)
 		privateRouter.PUT("", categoryCtrl.EditCategory)
 		privateRouter.POST("status/:status", categoryCtrl.SetStatus)
-
 	}
 }
