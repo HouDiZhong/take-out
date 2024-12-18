@@ -26,4 +26,13 @@ func (dr *CommonRouter) InitApiRouter(parent *gin.RouterGroup) {
 		uploadRouter.GET("/:subdir/:filename", commonCtrl.LocalVisit)
 	}
 
+	// 店铺的两个接口就不单独常见路由文件了
+	// 依赖注入
+	shopCtrl := new(controller.Shop)
+	shopRouter := parent.Group("shop")
+	{
+		shopRouter.GET("/status", shopCtrl.GetShopStatus)
+		shopRouter.PUT("/:status", shopCtrl.SetShopStatus)
+	}
+
 }
