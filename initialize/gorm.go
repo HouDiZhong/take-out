@@ -2,18 +2,19 @@ package initialize
 
 import (
 	"errors"
+	"take-out/global"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"take-out/global"
-	"time"
 )
 
 var (
-	GormToManyRequestError = errors.New("gorm: to many request")
+	ErrGormToManyRequestError = errors.New("gorm: to many request")
 )
 
 func InitDatabase(dsn string) *gorm.DB {
@@ -83,8 +84,8 @@ func SlowQueryLog(db *gorm.DB) {
 func GormRateLimiter(db *gorm.DB, r *rate.Limiter) {
 	err := db.Callback().Query().Before("*").Register("RateLimitGormMiddleware", func(d *gorm.DB) {
 		if !r.Allow() {
-			d.AddError(GormToManyRequestError)
-			global.Log.Error(GormToManyRequestError.Error())
+			d.AddError(ErrGormToManyRequestError)
+			global.Log.Error(ErrGormToManyRequestError.Error())
 			return
 		}
 	})

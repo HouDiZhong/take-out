@@ -29,6 +29,18 @@ type DishServiceImpl struct {
 	setMealDishRepo repository.SetMealDishRepo
 }
 
+func NewDishService(
+	repo repository.DishRepo,
+	dishFlavorRepo repository.DishFlavorRepo,
+	setMealDishRepo repository.SetMealDishRepo,
+) IDishService {
+	return &DishServiceImpl{
+		repo:            repo,
+		dishFlavorRepo:  dishFlavorRepo,
+		setMealDishRepo: setMealDishRepo,
+	}
+}
+
 func (d *DishServiceImpl) Delete(ctx context.Context, ids string) error {
 	// ids 为多个id的组合，以,进行分割，进行批量删除
 	idList := strings.Split(ids, ",")
@@ -202,8 +214,4 @@ func (d *DishServiceImpl) AddDishWithFlavors(ctx context.Context, dto request.Di
 		return err
 	}
 	return transaction.Commit()
-}
-
-func NewDishService(repo repository.DishRepo, dishFlavorRepo repository.DishFlavorRepo, setMealDishRepo repository.SetMealDishRepo) IDishService {
-	return &DishServiceImpl{repo: repo, dishFlavorRepo: dishFlavorRepo, setMealDishRepo: setMealDishRepo}
 }

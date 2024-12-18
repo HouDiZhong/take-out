@@ -17,8 +17,8 @@ type DishController struct {
 	service service.IDishService
 }
 
-func NewDishController(service service.IDishService) *DishController {
-	return &DishController{service: service}
+func NewDishController(service service.IDishService) DishController {
+	return DishController{service: service}
 }
 
 // AddDish 新增菜品数据
