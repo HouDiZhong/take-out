@@ -19,7 +19,11 @@ func (dr *DishRouter) InitApiRouter(parent *gin.RouterGroup) {
 	privateRouter.Use(middle.VerifyJWTAdmin())
 	// 依赖注入
 	dishCtrl := controller.NewDishController(
-		service.NewDishService(dao.NewDishRepo(global.DB), dao.NewDishFlavorDao(), dao.NewSetMealDishDao()),
+		service.NewDishService(
+			dao.NewDishRepo(global.DB),
+			dao.NewDishFlavorDao(),
+			dao.NewSetMealDishDao(),
+		),
 	)
 	{
 		privateRouter.POST("", dishCtrl.AddDish)
