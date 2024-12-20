@@ -22,6 +22,7 @@ var AdminRouter = []RouterGroup{
 var UserRouter = []RouterGroup{
 	&user.AddressRouter{},
 	&user.OrderRouter{},
+	&user.UserRouter{},
 }
 
 func InitRouterGroup(r *gin.Engine) *gin.Engine {

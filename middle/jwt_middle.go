@@ -47,10 +47,12 @@ func VerifyJWTAdmin() gin.HandlerFunc {
 func VerifyJWTUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		code := e.SUCCESS
-		token := c.Request.Header.Get(global.Config.Jwt.User.Name)
+		user := global.Config.Jwt.User
+		token := c.Request.Header.Get(user.Name)
 		// 解析获取用户载荷信息
-		payLoad, err := utils.ParseToken(token, global.Config.Jwt.User.Secret)
-		if err != nil {
+		payLoad, err := utils.ParseToken(token, user.Secret)
+		isOk := VerifyJWTRedis(user.Secret, payLoad.UserId)
+		if err != nil || isOk {
 			code = e.UNKNOW_IDENTITY
 			c.JSON(http.StatusUnauthorized, common.Result{Code: code})
 			c.Abort()
