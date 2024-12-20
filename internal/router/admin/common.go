@@ -2,6 +2,7 @@ package admin
 
 import (
 	"take-out/internal/api/controller"
+	"take-out/internal/service"
 	"take-out/middle"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,7 @@ func (dr *CommonRouter) InitApiRouter(parent *gin.RouterGroup) {
 
 	// 店铺的两个接口就不单独常见路由文件了
 	// 依赖注入
-	shopCtrl := new(controller.Shop)
+	shopCtrl := controller.NewShopController(service.NewShopService())
 	shopRouter := parent.Group("shop")
 	{
 		shopRouter.GET("/status", shopCtrl.GetShopStatus)
