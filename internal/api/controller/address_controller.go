@@ -14,7 +14,7 @@ func NewAddressConteroller() AddressConteroller {
 }
 
 func (ac AddressConteroller) CreateAddress(c *gin.Context) {
-
+	c.JSON(http.StatusOK, common.Result{Code: 1, Data: "请求成功"})
 }
 
 func (ac AddressConteroller) AddressList(c *gin.Context) {

@@ -53,6 +53,7 @@ func (ec *EmployeeController) Login(ctx *gin.Context) {
 func (ec *EmployeeController) Logout(ctx *gin.Context) {
 	code := e.SUCCESS
 	err := ec.service.Logout(ctx)
+
 	if err != nil {
 		code = e.ERROR
 		global.Log.Warn("EmployeeController login Error:", err.Error())
