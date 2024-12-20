@@ -11,11 +11,13 @@ import (
 	"take-out/internal/api/response"
 	"take-out/internal/model"
 	"take-out/internal/repository"
+
+	"github.com/gin-gonic/gin"
 )
 
 type IEmployeeService interface {
 	Login(context.Context, request.EmployeeLogin) (*response.EmployeeLogin, error)
-	Logout(ctx context.Context) error
+	Logout(ctx *gin.Context) error
 	EditPassword(context.Context, request.EmployeeEditPassword) error
 	CreateEmployee(ctx context.Context, employee request.EmployeeDTO) error
 	PageQuery(ctx context.Context, dto request.EmployeePageQueryDTO) (*common.PageResult, error)
@@ -116,10 +118,15 @@ func (ei *EmployeeImpl) EditPassword(ctx context.Context, employeeEdit request.E
 	return err
 }
 
-func (ei *EmployeeImpl) Logout(ctx context.Context) error {
-	// TODO 后续扩展为单点登录模式。 1.获取上下文中当前用户
-	// 2.如果是单点登录的话执行推出操作
-	return nil
+func (ei *EmployeeImpl) Logout(ctx *gin.Context) error {
+	id, exists := ctx.Get(enum.CurrentId)
+
+	if exists {
+		_, err := utils.DeleteRedisToken(id.(uint64), global.Config.Jwt.Admin.Secret)
+		return err
+	}
+
+	return e.Error_ACCOUNT_NOT_FOUND
 }
 
 func (ei *EmployeeImpl) Login(ctx context.Context, employeeLogin request.EmployeeLogin) (*response.EmployeeLogin, error) {
@@ -139,7 +146,7 @@ func (ei *EmployeeImpl) Login(ctx context.Context, employeeLogin request.Employe
 	}
 	// 生成Token
 	jwtConfig := global.Config.Jwt.Admin
-	token, err := utils.GenerateToken(employee.Id, jwtConfig.Name, jwtConfig.Secret)
+	token, err := utils.GenerateToken(employee.Id, jwtConfig)
 	if err != nil {
 		return nil, err
 	}
