@@ -17,12 +17,10 @@ func NewUserRepo(db *gorm.DB) repository.UserRepo {
 
 func (u *UserDao) FindByOpenId(openId string) (model.User, error) {
 	user := model.User{}
-	err := u.db.Where("openid = ?", openId).Find(&user).Error
+	err := u.db.Model(&user).Where("openid = ?", openId).Find(&user).Error
 	return user, err
 }
 
-func (u *UserDao) CreateUser(openId string) error {
-	user := model.User{OpenID: openId}
-	err := u.db.Create(&user).Error
-	return err
+func (u *UserDao) CreateUser(user *model.User) error {
+	return u.db.Create(&user).Error
 }

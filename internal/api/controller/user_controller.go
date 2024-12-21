@@ -50,6 +50,7 @@ func (u *UserController) Login(c *gin.Context) {
 	var user User
 	err := c.ShouldBind(&user)
 	if err != nil {
+		global.Log.Error("login request analysis error", "Error", err.Error())
 		c.JSON(http.StatusOK, common.Result{Code: e.ERROR, Msg: err.Error()})
 		return
 	}
@@ -60,12 +61,12 @@ func (u *UserController) Login(c *gin.Context) {
 		return
 	}
 
-	token, err := u.service.Login(openId)
+	userInfo, err := u.service.Login(openId)
 	if err != nil {
 		global.Log.Error("用户登录失败", "Error", err.Error())
 		c.JSON(http.StatusOK, common.Result{Code: e.ERROR, Msg: "登录失败"})
 	}
-	c.JSON(http.StatusOK, common.Result{Code: e.SUCCESS, Data: token, Msg: "登录成功"})
+	c.JSON(http.StatusOK, common.Result{Code: e.SUCCESS, Data: userInfo, Msg: "登录成功"})
 }
 
 func (u *UserController) Logout(c *gin.Context) {

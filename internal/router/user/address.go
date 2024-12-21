@@ -1,7 +1,10 @@
 package user
 
 import (
+	"take-out/global"
 	"take-out/internal/api/controller"
+	"take-out/internal/repository/dao"
+	"take-out/internal/service"
 	"take-out/middle"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +15,11 @@ type AddressRouter struct{}
 func (ar *AddressRouter) InitApiRouter(rg *gin.RouterGroup) {
 	r := rg.Group("addressBook")
 	r.Use(middle.VerifyJWTUser())
-	ctl := controller.NewAddressConteroller()
+	ctl := controller.NewAddressConteroller(
+		service.NewAddressService(
+			dao.NewAddressDao(global.DB),
+		),
+	)
 	{
 		// 新增地址
 		r.POST("", ctl.CreateAddress)
@@ -25,7 +32,7 @@ func (ar *AddressRouter) InitApiRouter(rg *gin.RouterGroup) {
 		// 通过id删除地址
 		r.DELETE("", ctl.DeleteAddressById)
 		// 通过id查询地址
-		r.GET("?:id", ctl.GetAddressById)
+		r.GET("/:id", ctl.GetAddressById)
 		// 设置默认地址
 		r.PUT("/default", ctl.SetDefaultAddress)
 	}

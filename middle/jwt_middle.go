@@ -24,15 +24,19 @@ func VerifyJWTRedis(secret string, UserId uint64) bool {
 
 func VerifyJWTAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		code := e.SUCCESS
 		admin := global.Config.Jwt.Admin
 		token := c.Request.Header.Get(admin.Name)
 		// 解析获取用户载荷信息
 		payLoad, err := utils.ParseToken(token, admin.Secret)
-		isOk := VerifyJWTRedis(admin.Secret, payLoad.UserId)
-		if err != nil || isOk {
-			code = e.UNKNOW_IDENTITY
-			c.JSON(http.StatusUnauthorized, common.Result{Code: code})
+
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, common.Result{Code: e.UNKNOW_IDENTITY})
+			c.Abort()
+			return
+		}
+
+		if isOk := VerifyJWTRedis(admin.Secret, payLoad.UserId); isOk {
+			c.JSON(http.StatusUnauthorized, common.Result{Code: e.UNKNOW_IDENTITY})
 			c.Abort()
 			return
 		}
@@ -46,15 +50,18 @@ func VerifyJWTAdmin() gin.HandlerFunc {
 
 func VerifyJWTUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		code := e.SUCCESS
 		user := global.Config.Jwt.User
 		token := c.Request.Header.Get(user.Name)
 		// 解析获取用户载荷信息
 		payLoad, err := utils.ParseToken(token, user.Secret)
-		isOk := VerifyJWTRedis(user.Secret, payLoad.UserId)
-		if err != nil || isOk {
-			code = e.UNKNOW_IDENTITY
-			c.JSON(http.StatusUnauthorized, common.Result{Code: code})
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, common.Result{Code: e.UNKNOW_IDENTITY})
+			c.Abort()
+			return
+		}
+
+		if isOk := VerifyJWTRedis(user.Secret, payLoad.UserId); isOk {
+			c.JSON(http.StatusUnauthorized, common.Result{Code: e.UNKNOW_IDENTITY})
 			c.Abort()
 			return
 		}
