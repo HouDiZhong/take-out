@@ -16,6 +16,23 @@ type SetMealDao struct {
 	db *gorm.DB
 }
 
+func (s *SetMealDao) SetMealDishById(cId string) ([]response.SetMealDish, error) {
+	var Dishs []response.SetMealDish
+
+	err := s.db.Model(&model.Dish{}).
+		Select("description", "image", "dish.name as name", "setmeal_dish.copies as copies").
+		Joins("join setmeal_dish on dish_id = dish.id and setmeal_id = ?", cId).
+		Scan(&Dishs).Error
+
+	return Dishs, err
+}
+
+func (s *SetMealDao) QueryListById(cId string) ([]model.SetMeal, error) {
+	var setMealList []model.SetMeal
+	err := s.db.Where("category_id = ?", cId).Find(&setMealList).Error
+	return setMealList, err
+}
+
 func (s *SetMealDao) GetByIdWithDish(transactions tx.Transaction, id uint64) (model.SetMeal, error) {
 	db, err := tx.GetGormDB(transactions)
 	if err != nil {

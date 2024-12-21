@@ -5,6 +5,7 @@ import (
 	"take-out/common"
 	"take-out/global/tx"
 	"take-out/internal/api/request"
+	"take-out/internal/api/response"
 	"take-out/internal/model"
 )
 
@@ -17,4 +18,7 @@ type SetMealRepo interface {
 	PageQuery(ctx context.Context, dto request.SetMealPageQueryDTO) (*common.PageResult, error)
 	SetStatus(ctx context.Context, id uint64, status int) error
 	GetByIdWithDish(db tx.Transaction, dishId uint64) (model.SetMeal, error)
+
+	QueryListById(cId string) ([]model.SetMeal, error)
+	SetMealDishById(cId string) ([]response.SetMealDish, error)
 }

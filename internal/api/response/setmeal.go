@@ -32,3 +32,10 @@ type SetMealWithDishByIdVo struct {
 	Status        int                 `json:"status"`
 	UpdateTime    time.Time           `json:"updateTime"`
 }
+
+type SetMealDish struct {
+	Copies      int    `json:"copies"`
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	Image       string `json:"image"`
+}

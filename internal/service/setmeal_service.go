@@ -19,11 +19,38 @@ type ISetMealService interface {
 	PageQuery(ctx context.Context, dto request.SetMealPageQueryDTO) (*common.PageResult, error)
 	OnOrClose(ctx context.Context, id uint64, status int) error
 	GetByIdWithDish(ctx context.Context, dishId uint64) (response.SetMealWithDishByIdVo, error)
+	QueryListById(ctx context.Context, cId string) ([]response.SetMealPageQueryVo, error)
+	SetMealDishById(ctx context.Context, sId string) ([]response.SetMealDish, error)
 }
 
 type SetMealServiceImpl struct {
 	repo            repository.SetMealRepo
 	setMealDishRepo repository.SetMealDishRepo
+}
+
+func (s *SetMealServiceImpl) SetMealDishById(ctx context.Context, cId string) ([]response.SetMealDish, error) {
+	// dishs, err := s.repo.SetMealDishById(cId)
+	return s.repo.SetMealDishById(cId)
+}
+
+func (s *SetMealServiceImpl) QueryListById(ctx context.Context, cId string) ([]response.SetMealPageQueryVo, error) {
+	smeals, err := s.repo.QueryListById(cId)
+	SetMealPageQueryVo := make([]response.SetMealPageQueryVo, 0)
+
+	for _, v := range smeals {
+		SetMealPageQueryVo = append(SetMealPageQueryVo, response.SetMealPageQueryVo{
+			Id:          v.Id,
+			CategoryId:  v.CategoryId,
+			Name:        v.Name,
+			Price:       v.Price,
+			Description: v.Description,
+			Image:       v.Image,
+			Status:      v.Status,
+			UpdateTime:  v.UpdateTime,
+		})
+	}
+
+	return SetMealPageQueryVo, err
 }
 
 func (s *SetMealServiceImpl) GetByIdWithDish(ctx context.Context, setMealId uint64) (response.SetMealWithDishByIdVo, error) {

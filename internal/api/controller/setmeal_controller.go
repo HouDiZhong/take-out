@@ -146,3 +146,37 @@ func (sc *SetMealController) GetByIdWithDish(ctx *gin.Context) {
 		Msg:  e.GetMsg(code),
 	})
 }
+
+// 根据分类id查询获取套餐
+func (sc *SetMealController) QueryListById(ctx *gin.Context) {
+	categoryId := ctx.Query("categoryId")
+	// 获取套餐详情
+	resp, err := sc.service.QueryListById(ctx, categoryId)
+	if err != nil {
+		global.Log.Warn("根据分类id查询获取套餐", "Err:", err.Error())
+		e.Send(ctx, e.ERROR)
+		return
+	}
+	ctx.JSON(http.StatusOK, common.Result{
+		Code: e.SUCCESS,
+		Data: resp,
+		Msg:  e.GetMsg(e.SUCCESS),
+	})
+}
+
+// 根据套餐id查询包含的菜品
+func (sc *SetMealController) SetMealDishById(ctx *gin.Context) {
+	setMealId := ctx.Param("id")
+	// 获取套餐详情
+	resp, err := sc.service.SetMealDishById(ctx, setMealId)
+	if err != nil {
+		global.Log.Warn("根据套餐id查询包含的菜品", "Err:", err.Error())
+		e.Send(ctx, e.ERROR)
+		return
+	}
+	ctx.JSON(http.StatusOK, common.Result{
+		Code: e.SUCCESS,
+		Data: resp,
+		Msg:  e.GetMsg(e.SUCCESS),
+	})
+}
