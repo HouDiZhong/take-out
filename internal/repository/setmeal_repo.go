@@ -21,4 +21,6 @@ type SetMealRepo interface {
 
 	QueryListById(cId string) ([]model.SetMeal, error)
 	SetMealDishById(cId string) ([]response.SetMealDish, error)
+
+	QuerySetMealDesById(sId string) (model.SetMeal, error)
 }

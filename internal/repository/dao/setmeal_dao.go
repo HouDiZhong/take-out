@@ -33,6 +33,12 @@ func (s *SetMealDao) QueryListById(cId string) ([]model.SetMeal, error) {
 	return setMealList, err
 }
 
+func (s *SetMealDao) QuerySetMealDesById(sId string) (model.SetMeal, error) {
+	var setMeal model.SetMeal
+	err := s.db.Model(&setMeal).First(&setMeal, "id = ?", sId).Error
+	return setMeal, err
+}
+
 func (s *SetMealDao) GetByIdWithDish(transactions tx.Transaction, id uint64) (model.SetMeal, error) {
 	db, err := tx.GetGormDB(transactions)
 	if err != nil {

@@ -24,6 +24,7 @@ var UserRouter = []RouterGroup{
 	&user.OrderRouter{},
 	&user.UserRouter{},
 	&user.CommonRouter{},
+	&user.ShopCartRouter{},
 }
 
 func InitRouterGroup(r *gin.Engine) *gin.Engine {

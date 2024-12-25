@@ -21,6 +21,7 @@ type ISetMealService interface {
 	GetByIdWithDish(ctx context.Context, dishId uint64) (response.SetMealWithDishByIdVo, error)
 	QueryListById(ctx context.Context, cId string) ([]response.SetMealPageQueryVo, error)
 	SetMealDishById(ctx context.Context, sId string) ([]response.SetMealDish, error)
+	QuerySetMealDesById(ctx context.Context, sId string) (model.SetMeal, error)
 }
 
 type SetMealServiceImpl struct {
@@ -51,6 +52,11 @@ func (s *SetMealServiceImpl) QueryListById(ctx context.Context, cId string) ([]r
 	}
 
 	return SetMealPageQueryVo, err
+}
+
+func (s *SetMealServiceImpl) QuerySetMealDesById(ctx context.Context, sId string) (model.SetMeal, error) {
+	setMeal, err := s.repo.QuerySetMealDesById(sId)
+	return setMeal, err
 }
 
 func (s *SetMealServiceImpl) GetByIdWithDish(ctx context.Context, setMealId uint64) (response.SetMealWithDishByIdVo, error) {
