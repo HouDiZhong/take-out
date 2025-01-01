@@ -21,7 +21,7 @@ func NewShopCartConteroller(service service.ShopCartService) ShopCartConteroller
 
 func (s ShopCartConteroller) GetShopCart(c *gin.Context) {
 	if uid, exists := c.Get(enum.CurrentId); exists {
-		shopCarts, err := s.service.GetShopCart(uid.(uint64))
+		shopCarts, err := s.service.GetShopCartAll(uid.(uint64))
 		if err != nil {
 			c.JSON(http.StatusOK, common.Result{Code: e.ERROR, Msg: err.Error()})
 			return
