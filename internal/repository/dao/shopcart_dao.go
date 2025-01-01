@@ -25,9 +25,9 @@ func (s ShopCartDao) AddShopCart(shopCart model.ShopCart) error {
 
 func (s ShopCartDao) GetShopCartAll(uid uint64) ([]response.ShopCartVO, error) {
 	var shopCart []response.ShopCartVO
-	err := s.db.Model(&model.ShopCart{}).
+	err := s.db.Model(&modelShopCart).
 		Where("user_id = ?", uid).
-		Find(&modelShopCart).Error
+		Find(&shopCart).Error
 	return shopCart, err
 }
 
