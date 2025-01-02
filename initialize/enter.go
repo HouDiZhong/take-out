@@ -1,10 +1,11 @@
 package initialize
 
 import (
-	"github.com/gin-gonic/gin"
 	"take-out/config"
 	"take-out/global"
 	"take-out/logger"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GlobalInit() *gin.Engine {
@@ -18,5 +19,7 @@ func GlobalInit() *gin.Engine {
 	global.Redis = initRedis()
 	// Router初始化
 	router := routerInit()
+	// Cron初始化
+	initCron()
 	return router
 }

@@ -11,6 +11,7 @@ import (
 	"take-out/internal/model"
 	"take-out/internal/repository"
 	"take-out/internal/repository/dao"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -62,12 +63,12 @@ func (os OrderServiceImpl) CreateOrder(c *gin.Context, orderDTO request.OrderDTO
 				Amount:                orderDTO.Amount,
 				Remark:                orderDTO.Remark,
 				AddressBookID:         orderDTO.AddressBookId,
-				OrderTime:             utils.Now(),
-				CheckoutTime:          utils.Now(),
-				CancelTime:            utils.Now(),
-				DeliveryTime:          utils.Now(),
+				OrderTime:             time.Now(),
+				CheckoutTime:          time.Now(),
+				CancelTime:            time.Now(),
+				DeliveryTime:          time.Now(),
 				DeliveryStatus:        orderDTO.DeliveryStatus,
-				EstimatedDeliveryTime: orderDTO.EstimatedDeliveryTime,
+				EstimatedDeliveryTime: time.Now(),
 				PackAmount:            orderDTO.PackAmount,
 				TablewareNumber:       orderDTO.TablewareNumber,
 				TablewareStatus:       orderDTO.TablewareStatus,
@@ -108,7 +109,7 @@ func (os OrderServiceImpl) CreateOrder(c *gin.Context, orderDTO request.OrderDTO
 				ID:          orderInfo.ID,
 				OrderAmount: totalAmount,
 				OrderNumber: orderInfo.Number,
-				OrderTime:   orderInfo.OrderTime,
+				OrderTime:   orderInfo.OrderTime.Format(enum.TimeLayout),
 			}
 
 			return nil
