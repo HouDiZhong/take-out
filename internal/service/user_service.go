@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log/slog"
 	"take-out/common/e"
 	"take-out/common/enum"
 	"take-out/common/utils"
@@ -34,13 +35,13 @@ func (u UserServiceImpl) Login(openId string) (UserVO, error) {
 	// 跟据openId查询用户信息
 	user, err := u.repo.FindByOpenId(openId)
 	if err != nil {
-		global.Log.Error("查询用户信息失败", "Error", err.Error())
+		slog.Warn("查询用户信息失败", "Error", err.Error())
 	}
 	if user.OpenID == "" {
 		user := model.User{OpenID: openId}
 		err := u.repo.CreateUser(&user)
 		if err != nil {
-			global.Log.Error("创建用户失败", "Error", err.Error())
+			slog.Error("创建用户失败", "Error", err.Error())
 			return UserVO{}, err
 		}
 		u.Login(openId)

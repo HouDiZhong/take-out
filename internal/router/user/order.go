@@ -2,6 +2,7 @@ package user
 
 import (
 	"take-out/internal/api/controller"
+	"take-out/internal/service"
 	"take-out/middle"
 
 	"github.com/gin-gonic/gin"
@@ -9,11 +10,11 @@ import (
 
 type OrderRouter struct{}
 
-func (o *OrderRouter) InitApiRouter(rg *gin.RouterGroup) {
+func (o *OrderRouter) InitApiRouter(rg *gin.RouterGroup, hub *service.Hub) {
 	r := rg.Group("order")
 	// 私有路由使用jwt验证
 	r.Use(middle.VerifyJWTUser())
-	orderCtl := controller.NewOrderController()
+	orderCtl := controller.NewOrderController(hub)
 	{
 		// 催单
 		r.GET("/reminder/:id", orderCtl.Reminder)

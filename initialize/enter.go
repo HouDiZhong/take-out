@@ -21,5 +21,7 @@ func GlobalInit() *gin.Engine {
 	router := routerInit()
 	// Cron初始化
 	initCron()
+	// WebSocket初始化
+	// InitWebSocket(router)
 	return router
 }

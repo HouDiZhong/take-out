@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log/slog"
 	"strconv"
 	"take-out/common/enum"
 	"take-out/common/utils"
@@ -53,6 +54,11 @@ func (os OrderServiceImpl) CreateOrder(c *gin.Context, orderDTO request.OrderDTO
 		// 开启事务
 		return resOrder, os.db.Transaction(func(tx *gorm.DB) error {
 			orderDao := dao.NewTXOrderDao(tx)
+			EstimatedDeliveryTime, err := time.Parse(enum.TimeLayout, orderDTO.EstimatedDeliveryTime)
+			if err != nil {
+				slog.Error("预计送达时间格式错误", "Error", err.Error())
+				return err
+			}
 			orderInfo := model.Order{
 				UserID:                uid.(uint64),
 				Consignee:             addInfo.Consignee,
@@ -68,13 +74,14 @@ func (os OrderServiceImpl) CreateOrder(c *gin.Context, orderDTO request.OrderDTO
 				CancelTime:            time.Now(),
 				DeliveryTime:          time.Now(),
 				DeliveryStatus:        orderDTO.DeliveryStatus,
-				EstimatedDeliveryTime: time.Now(),
+				EstimatedDeliveryTime: EstimatedDeliveryTime,
 				PackAmount:            orderDTO.PackAmount,
 				TablewareNumber:       orderDTO.TablewareNumber,
 				TablewareStatus:       orderDTO.TablewareStatus,
 			}
 			// 创建订单
 			if err := orderDao.CreateOrder(&orderInfo); err != nil {
+				slog.Error("订单创建失败", "Error", err.Error())
 				return err
 			}
 
@@ -96,15 +103,17 @@ func (os OrderServiceImpl) CreateOrder(c *gin.Context, orderDTO request.OrderDTO
 			}
 
 			if err := orderDao.BatcheCreateOrder(orderDetail); err != nil {
+				slog.Error("批量创建订单详情失败", "Error", err.Error())
 				return err
 			}
 
 			// 清空购物车
 			if err := os.shopcart.CleanShopCart(uid.(uint64)); err != nil {
+				slog.Error("购物车清空失败", "Error", err.Error())
 				return err
 			}
 
-			// 返回前端数据
+			// 前端数据封装
 			resOrder = response.Order{
 				ID:          orderInfo.ID,
 				OrderAmount: totalAmount,
