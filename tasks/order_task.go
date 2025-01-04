@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"take-out/common/enum"
 	"take-out/global"
+	"take-out/internal/api/request"
 	"take-out/internal/repository/dao"
 	"time"
 
@@ -31,7 +32,11 @@ func ProcessTimeoutOrder() {
 			for _, order := range orders {
 				oids = append(oids, order.ID)
 			}
-			err = db.UpdateOrderStatus(enum.OrderStatusCancel, oids)
+			o := request.OrderStatus{
+				Type:       enum.OrderStatusCancel,
+				CancelTime: time.Now(),
+			}
+			err = db.UpdateOrderStatus(oids, o)
 			if err != nil {
 				slog.Error("自动更新订单状态任务失败", "Err:", err.Error())
 				return err

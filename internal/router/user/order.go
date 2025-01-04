@@ -19,9 +19,9 @@ func (o *OrderRouter) InitApiRouter(rg *gin.RouterGroup, hub *service.Hub) {
 		// 催单
 		r.GET("/reminder/:id", orderCtl.Reminder)
 		// 再来一单
-		r.GET("/repetition/:id", orderCtl.Rpetition)
+		r.POST("/repetition/:id", orderCtl.Rpetition)
 		// 历史订单查询
-		r.POST("/historyOrders", orderCtl.HistoryOrders)
+		r.GET("/historyOrders", orderCtl.HistoryOrders)
 		// 取消订单
 		r.PUT("/cancel/:id", orderCtl.Cancel)
 		// 订单详情
