@@ -5,6 +5,7 @@ import (
 	"take-out/common"
 	"take-out/global/tx"
 	"take-out/internal/api/request"
+	"take-out/internal/api/response"
 	"take-out/internal/model"
 )
 
@@ -17,4 +18,6 @@ type DishRepo interface {
 	OnOrClose(ctx context.Context, id uint64, status int) error
 	Update(db tx.Transaction, dish model.Dish) error
 	Delete(db tx.Transaction, id uint64) error
+
+	QuerySetMealDesStatusNumber() (response.SetmealAndDishVO, error)
 }

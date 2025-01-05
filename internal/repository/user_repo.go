@@ -5,4 +5,7 @@ import "take-out/internal/model"
 type UserRepo interface {
 	FindByOpenId(openId string) (model.User, error)
 	CreateUser(user *model.User) error
+
+	// 获取今天新增用户
+	GetNewUserNumber() (int64, error)
 }

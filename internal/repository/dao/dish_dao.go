@@ -26,6 +26,17 @@ func (dd *DishDao) Delete(transactions tx.Transaction, id uint64) error {
 	return err
 }
 
+func (dd *DishDao) QuerySetMealDesStatusNumber() (response.SetmealAndDishVO, error) {
+	var reslut response.SetmealAndDishVO
+	err := dd.db.Raw(`
+		select 
+			count(case when status = 0 then 1 end) as Discontinued,
+			count(case when status = 1 then 1 end) as Sold
+		from dish
+	`).Scan(&reslut).Error
+	return reslut, err
+}
+
 func (dd *DishDao) Update(transactions tx.Transaction, dish model.Dish) error {
 	db, err := tx.GetGormDB(transactions)
 	if err != nil {

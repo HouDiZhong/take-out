@@ -117,6 +117,17 @@ func (s *SetMealDao) Delete(transactions tx.Transaction, ids []string) error {
 	return err
 }
 
+func (s *SetMealDao) QuerySetMealDesStatusNumber() (response.SetmealAndDishVO, error) {
+	var reslut response.SetmealAndDishVO
+	err := s.db.Raw(`
+		select 
+			count(case when status = 0 then 1 end) as Discontinued,
+			count(case when status = 1 then 1 end) as Sold
+		from setmeal
+	`).Scan(&reslut).Error
+	return reslut, err
+}
+
 func NewSetMealDao(db *gorm.DB) repository.SetMealRepo {
 	return &SetMealDao{db: db}
 }

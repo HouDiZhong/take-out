@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"take-out/common/utils"
 	"take-out/internal/model"
 	"take-out/internal/repository"
 
@@ -23,4 +24,10 @@ func (u *UserDao) FindByOpenId(openId string) (model.User, error) {
 
 func (u *UserDao) CreateUser(user *model.User) error {
 	return u.db.Create(&user).Error
+}
+
+func (u *UserDao) GetNewUserNumber() (int64, error) {
+	var number int64
+	err := u.db.Model(&model.User{}).Where("create_time = ?", utils.ToDay()).Count(&number).Error
+	return number, err
 }

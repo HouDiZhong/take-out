@@ -31,4 +31,8 @@ type OrderRepo interface {
 	GetOrderById(uid uint64, oid string) (model.Order, error)
 	// 获取订单状态数量
 	GetStatusNumber(uid uint64) (*response.OrderStatusNumber, error)
+	// 订单管理数据
+	OrderStatusNumber() (response.OrderNumberVO, error)
+	// 营业额，平均客单价，有效订单，订单完成率
+	BusinessOrder() (response.BusinessOrderVO, error)
 }

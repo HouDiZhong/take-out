@@ -162,3 +162,40 @@ func (o *OrderDao) GetStatusNumber(uid uint64) (*response.OrderStatusNumber, err
 
 	return &osn, err
 }
+
+func (o *OrderDao) OrderStatusNumber() (response.OrderNumberVO, error) {
+	var order response.OrderNumberVO
+	err := o.db.Raw(`
+		select
+			COUNT(*) AS AllOrders,
+			COUNT(CASE WHEN status = 6 THEN 1 END) AS CancelledOrders,
+			COUNT(CASE WHEN status = 5 THEN 1 END) AS CompletedOrders,
+			COUNT(CASE WHEN status = 4 THEN 1 END) AS DeliveredOrders,
+			COUNT(CASE WHEN status = 2 THEN 1 END) AS WaitingOrders
+		from orders
+	`).Scan(&order).Error
+
+	return order, err
+}
+
+// 营业额，平均客单价，有效订单，订单完成率
+func (o *OrderDao) BusinessOrder() (response.BusinessOrderVO, error) {
+	var order response.BusinessOrderVO
+	err := o.db.Raw(`
+		select
+			Turnover,
+			ValidOrderCount,
+			IFNULL(TotalOrders / NULLIF(ValidOrderCount, 0), 0) AS OrderStatusNumber,
+			IFNULL(Turnover / NULLIF(ValidOrderCount, 0), 0) AS UnitPrice
+		from(
+			select
+				SUM(CASE WHEN status in (3,4,5) THEN amount ELSE 0 END) AS Turnover,
+                COUNT(CASE WHEN status in (3,4,5) THEN 1 END) AS ValidOrderCount,
+				COUNT(*) AS TotalOrders
+            from orders
+			where order_time = CURDATE()
+		)as order_stats 
+	`).Scan(&order).Error
+
+	return order, err
+}

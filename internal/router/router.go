@@ -19,6 +19,7 @@ var AdminRouters = []RouterGroup{
 	&admin.DishRouter{},
 	&admin.CommonRouter{},
 	&admin.SetMealRouter{},
+	&admin.WorkspaceRouter{},
 }
 
 var UserRouters = []RouterGroup{

@@ -23,4 +23,6 @@ type SetMealRepo interface {
 	SetMealDishById(cId string) ([]response.SetMealDish, error)
 
 	QuerySetMealDesById(sId string) (model.SetMeal, error)
+
+	QuerySetMealDesStatusNumber() (response.SetmealAndDishVO, error)
 }

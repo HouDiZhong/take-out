@@ -17,3 +17,7 @@ func TimeStamp() int64 {
 func TimeStampStr() string {
 	return strconv.FormatInt(TimeStamp(), 10)
 }
+
+func ToDay() string {
+	return time.Now().Format("2006-01-02")
+}
