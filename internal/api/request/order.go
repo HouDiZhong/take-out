@@ -23,22 +23,22 @@ type QueryDTO struct {
 }
 
 type ConfirmDTO struct {
-	Id int64 `json:"orderId"`
+	Id int64 `json:"id"`
 }
 
 type CancelDTO struct {
-	Id           int64  `json:"orderId"`
+	Id           int64  `json:"id"`
 	CancelReason string `json:"cancelReason"`
 }
 
 type RejectionDTO struct {
-	Id              int64  `json:"orderId"`
+	Id              int64  `json:"id"`
 	RejectionReason string `json:"RejectionReason"`
 }
 
 type OrderStatus struct {
-	Type            int8      `json:"type"`
-	CancelTime      time.Time `json:"cancelTime"`
+	Status          int8      `json:"status"`          // 订单状态码
+	CancelTime      time.Time `json:"cancelTime"`      // 取消时间
 	CancelReason    string    `json:"cancelReason"`    // 取消原因
 	RejectionReason string    `json:"rejectionReason"` // 拒绝原因
 }

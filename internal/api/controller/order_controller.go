@@ -77,7 +77,7 @@ func (oc OrderController) Complete(c *gin.Context) {
 	if uid, exists := c.Get(enum.CurrentId); exists {
 		oid := c.Param("id")
 		o := request.OrderStatus{
-			Type: enum.OrderStatusFinish,
+			Status: enum.OrderStatusFinish,
 		}
 		if err := oc.service.AdminCancel(oid, uid.(uint64), o); err != nil {
 			c.JSON(http.StatusOK, common.Result{Code: e.ERROR, Msg: err.Error()})
@@ -91,7 +91,7 @@ func (oc OrderController) Delivery(c *gin.Context) {
 	if uid, exists := c.Get(enum.CurrentId); exists {
 		oid := c.Param("id")
 		o := request.OrderStatus{
-			Type: enum.OrderStatusSend,
+			Status: enum.OrderStatusSend,
 		}
 		if err := oc.service.AdminCancel(oid, uid.(uint64), o); err != nil {
 			c.JSON(http.StatusOK, common.Result{Code: e.ERROR, Msg: err.Error()})
@@ -109,7 +109,7 @@ func (oc OrderController) Confirm(c *gin.Context) {
 			return
 		}
 		o := request.OrderStatus{
-			Type: enum.OrderStatusAccept,
+			Status: enum.OrderStatusAccept,
 		}
 		oid := strconv.Itoa(int(cDTO.Id))
 		if err := oc.service.AdminCancel(oid, uid.(uint64), o); err != nil {
@@ -128,7 +128,7 @@ func (oc OrderController) AdminCancel(c *gin.Context) {
 			return
 		}
 		o := request.OrderStatus{
-			Type:         enum.OrderStatusCancel,
+			Status:       enum.OrderStatusCancel,
 			CancelTime:   time.Now(),
 			CancelReason: cDTO.CancelReason,
 		}
@@ -179,7 +179,7 @@ func (oc OrderController) Rejection(c *gin.Context) {
 			return
 		}
 		o := request.OrderStatus{
-			Type:            enum.OrderStatusAccept,
+			Status:          enum.OrderStatusCancel,
 			CancelTime:      time.Now(),
 			RejectionReason: rDTO.RejectionReason,
 		}

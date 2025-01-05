@@ -122,7 +122,7 @@ func (o *OrderDao) UpdateOrderStatus(oids []uint64, os request.OrderStatus) erro
 
 func (o *OrderDao) GetOrderById(uid uint64, oid string) (model.Order, error) {
 	var order model.Order
-	err := o.db.Model(&order).First(&order, "id = ?", uid, oid).Error
+	err := o.db.Model(&order).First(&order, "id = ?", oid).Error
 	return order, err
 }
 

@@ -33,7 +33,7 @@ func ProcessTimeoutOrder() {
 				oids = append(oids, order.ID)
 			}
 			o := request.OrderStatus{
-				Type:       enum.OrderStatusCancel,
+				Status:     enum.OrderStatusCancel,
 				CancelTime: time.Now(),
 			}
 			err = db.UpdateOrderStatus(oids, o)

@@ -230,7 +230,7 @@ func (os OrderServiceImpl) Cancel(c *gin.Context, userid uint64) error {
 		return err
 	}
 	o := request.OrderStatus{
-		Type:       enum.OrderStatusCancel,
+		Status:     enum.OrderStatusCancel,
 		CancelTime: time.Now(),
 	}
 	// 取消订单
