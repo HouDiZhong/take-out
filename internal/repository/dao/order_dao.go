@@ -3,6 +3,7 @@ package dao
 import (
 	"strconv"
 	"take-out/common"
+	"take-out/common/enum"
 	"take-out/global"
 	"take-out/internal/api/request"
 	"take-out/internal/api/response"
@@ -193,9 +194,104 @@ func (o *OrderDao) BusinessOrder() (response.BusinessOrderVO, error) {
                 COUNT(CASE WHEN status in (3,4,5) THEN 1 END) AS ValidOrderCount,
 				COUNT(*) AS TotalOrders
             from orders
-			where order_time = CURDATE()
+			where order_time = curdate()
 		)as order_stats 
 	`).Scan(&order).Error
 
 	return order, err
+}
+
+func (o *OrderDao) OrderTop(dto request.ReportQuestDTO) (response.SalesTop10ReportVO, error) {
+	var topData response.SalesTop10ReportVO
+
+	type DishSales struct {
+		Name        string
+		TotalNumber string
+	}
+	var dbData []DishSales
+	err := o.db.Raw(`
+		WITH filtered_orders AS (
+            SELECT id
+            FROM orders
+            WHERE status = ?
+				AND order_time >= ?
+				AND order_time < ?
+        )
+        SELECT 
+    		name,
+			SUM(number) AS total_number
+        FROM order_detail
+        WHERE order_id IN (SELECT id FROM filtered_orders)
+        GROUP BY name
+        ORDER BY total_number DESC
+        LIMIT 10
+	`, enum.OrderStatusFinish, dto.Begin, dto.End).Scan(&dbData).Error
+
+	if len(dbData) > 0 {
+		for _, d := range dbData {
+			topData.NameList += d.Name + ","
+			topData.NumberList += d.TotalNumber + ","
+		}
+	}
+
+	return topData, err
+}
+
+// 一段时间内的订单总数，有效订单数，完成率
+func (o *OrderDao) QueryOrderNumber(dto request.ReportQuestDTO) (response.OrderNuberReportVO, error) {
+	var vo response.OrderNuberReportVO
+	err := o.db.Raw(`
+		select
+			TotalOrderCount,
+			ValidOrderCount,
+			IFNULL(TotalOrderCount / NULLIF(ValidOrderCount, 0), 0) AS OrderCompletionRate
+		from(
+			select
+				COUNT(*) AS TotalOrderCount,
+				COUNT(CASE WHEN STATUS = 5 THEN 1 END) AS ValidOrderCount
+			from orders 
+			where order_time >= ? AND order_time < ?
+		)as order_stats 
+	`, dto.Begin, dto.End).Scan(&vo).Error
+
+	return vo, err
+}
+
+func (o *OrderDao) OrderReport(dto request.ReportQuestDTO) ([]response.LocalOrderVO, error) {
+	var dbData []response.LocalOrderVO
+	err := o.db.Raw(`
+		select
+			date,
+			TotalOrderCount,
+			ValidOrderCount
+		FROM(
+			SELECT 
+				DATE(order_time) AS date,
+				COUNT(*) AS TotalOrderCount,
+				COUNT(CASE WHEN status in (3,4,5) THEN 1 END) AS ValidOrderCount
+			FROM orders
+			WHERE ORDER_time >= ? AND order_time < ?
+			GROUP BY DATE(order_time)
+		) AS order_stats
+	`, dto.Begin, dto.End).Scan(&dbData).Error
+
+	return dbData, err
+}
+func (o *OrderDao) OrderTurnover(dto request.ReportQuestDTO) ([]response.LocalTurnoverVO, error) {
+	var dbData []response.LocalTurnoverVO
+	err := o.db.Raw(`
+		select
+			date,
+			TurnoverCount
+		FROM(
+			SELECT 
+				DATE(order_time) AS date,
+				SUM(CASE WHEN status in (3,4,5) THEN amount ELSE 0 END) AS TurnoverCount 
+			FROM orders
+			WHERE ORDER_time >= ? AND order_time < ?
+			GROUP BY DATE(order_time)
+		) AS order_stats
+	`, dto.Begin, dto.End).Scan(&dbData).Error
+
+	return dbData, err
 }

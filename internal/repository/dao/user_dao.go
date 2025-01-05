@@ -2,6 +2,8 @@ package dao
 
 import (
 	"take-out/common/utils"
+	"take-out/internal/api/request"
+	"take-out/internal/api/response"
 	"take-out/internal/model"
 	"take-out/internal/repository"
 
@@ -30,4 +32,23 @@ func (u *UserDao) GetNewUserNumber() (int64, error) {
 	var number int64
 	err := u.db.Model(&model.User{}).Where("create_time = ?", utils.ToDay()).Count(&number).Error
 	return number, err
+}
+
+func (o *UserDao) UserReport(dto request.ReportQuestDTO) ([]response.LocalUsertVO, error) {
+	var dbData []response.LocalUsertVO
+	err := o.db.Raw(`
+		SELECT date, NewUserCount, MAX(TotalUserCount) AS TotalUserCount
+		FROM (
+			SELECT
+				DATE(create_time) AS date,
+				COUNT(*) OVER (PARTITION BY DATE(create_time)) AS NewUserCount,
+				COUNT(*) OVER (ORDER BY DATE(create_time) ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS TotalUserCount
+			FROM user
+			WHERE create_time >= ? AND create_time < ?
+		) AS daily_stats
+		GROUP BY date, NewUserCount
+		ORDER BY date;
+	`, dto.Begin, dto.End).Scan(&dbData).Error
+
+	return dbData, err
 }

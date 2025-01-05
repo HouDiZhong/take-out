@@ -35,4 +35,13 @@ type OrderRepo interface {
 	OrderStatusNumber() (response.OrderNumberVO, error)
 	// 营业额，平均客单价，有效订单，订单完成率
 	BusinessOrder() (response.BusinessOrderVO, error)
+
+	// 销量前十
+	OrderTop(dto request.ReportQuestDTO) (response.SalesTop10ReportVO, error)
+	// 订单统计
+	OrderReport(dto request.ReportQuestDTO) ([]response.LocalOrderVO, error)
+	// 一段时间内的订单总数，有效订单数，完成率
+	QueryOrderNumber(dto request.ReportQuestDTO) (response.OrderNuberReportVO, error)
+	// 营业额统计
+	OrderTurnover(dto request.ReportQuestDTO) ([]response.LocalTurnoverVO, error)
 }
