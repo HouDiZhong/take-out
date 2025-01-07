@@ -46,6 +46,35 @@ type LocalUsertVO struct {
 	TotalUserCount string
 }
 
+type ExcelVO struct {
+	Times              string  // 日期
+	Turnovers          float64 // 营业额
+	ValidOrders        int     // 有效订单
+	OrderStatusNumbers float64 // 订单完成率
+	UnitPrices         float64 // 平均客单价
+	TotalOrders        int     // 所有订单
+}
+
+type EveryUserVO struct {
+	Times    string
+	NewUsers int
+}
+
+type ExcelsVO struct {
+	Date string
+	ExcelVO
+	EveryUserVO
+}
+
+func (l ExcelVO) GetDate() string {
+	return l.Times[:10]
+}
+func (l ExcelsVO) GetDate() string {
+	return l.Date[:10]
+}
+func (l EveryUserVO) GetDate() string {
+	return l.Times[:10]
+}
 func (l LocalTurnoverVO) GetDate() string {
 	return l.Date[:10]
 }

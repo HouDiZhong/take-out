@@ -129,37 +129,15 @@ func (o *OrderDao) GetOrderById(uid uint64, oid string) (model.Order, error) {
 
 func (o *OrderDao) GetStatusNumber(uid uint64) (*response.OrderStatusNumber, error) {
 	var osn response.OrderStatusNumber
-	type resultType struct {
-		StatusAlias string
-		Number      int
-	}
-	var results []resultType
-	err := o.db.Raw(`
-		SELECT 
-			CASE 
-				WHEN status = 3 THEN 'confirmed'
-				WHEN status = 4 THEN 'deliveryInProgress'
-				WHEN status = 2 THEN 'toBeConfirmed'
-				ELSE 'Other Orders'
-			END AS status_alias,
-			COUNT(*) AS number
-		FROM orders
-		GROUP BY status_alias
-	`).Scan(&results).Error
-	if err != nil {
-		return nil, err
-	}
 
-	for _, result := range results {
-		switch result.StatusAlias {
-		case "confirmed":
-			osn.Confirmed = result.Number
-		case "deliveryInProgress":
-			osn.DeliveryInProgress = result.Number
-		case "toBeConfirmed":
-			osn.ToBeConfirmed = result.Number
-		}
-	}
+	err := o.db.Raw(`
+		select
+			COUNT(*) AS AllOrders,
+			COUNT(CASE WHEN status = 3 THEN 1 END) AS Confirmed,
+			COUNT(CASE WHEN status = 4 THEN 1 END) AS DeliveryInProgress,
+			COUNT(CASE WHEN status = 2 THEN 1 END) AS ToBeConfirmed
+		from orders
+	`).Scan(&osn).Error
 
 	return &osn, err
 }
@@ -294,4 +272,30 @@ func (o *OrderDao) OrderTurnover(dto request.ReportQuestDTO) ([]response.LocalTu
 	`, dto.Begin, dto.End).Scan(&dbData).Error
 
 	return dbData, err
+}
+
+// 营业额，平均客单价，有效订单，订单完成率
+func (o *OrderDao) BatchBusinessOrder(dto request.ReportQuestDTO) ([]response.ExcelVO, error) {
+	var order []response.ExcelVO
+	err := o.db.Raw(`
+		select
+			Times,
+			Turnovers,
+			ValidOrders,
+			TotalOrders,
+			IFNULL(TotalOrders / NULLIF(ValidOrders, 0), 0) AS OrderStatusNumbers,
+			IFNULL(Turnovers / NULLIF(ValidOrders, 0), 0) AS UnitPrices
+		from(
+			select
+				SUM(CASE WHEN status in (3,4,5) THEN amount ELSE 0 END) AS Turnovers,
+                COUNT(CASE WHEN status in (3,4,5) THEN 1 END) AS ValidOrders,
+				COUNT(*) AS TotalOrders,
+				date(order_time) as Times
+            from orders
+			WHERE ORDER_time >= ? AND order_time < ?
+			group by Times
+		)as order_stats 
+	`, dto.Begin, dto.End).Scan(&order).Error
+
+	return order, err
 }

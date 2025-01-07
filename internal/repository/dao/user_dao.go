@@ -52,3 +52,17 @@ func (o *UserDao) UserReport(dto request.ReportQuestDTO) ([]response.LocalUsertV
 
 	return dbData, err
 }
+
+func (o *UserDao) EveryUserReport(dto request.ReportQuestDTO) ([]response.EveryUserVO, error) {
+	var dbData []response.EveryUserVO
+	err := o.db.Raw(`
+		SELECT
+			DATE(create_time) AS Times,
+			COUNT(*) as NewUsers
+		FROM user
+		WHERE create_time >= ? AND create_time < ?
+		GROUP BY Times;
+	`, dto.Begin, dto.End).Scan(&dbData).Error
+
+	return dbData, err
+}

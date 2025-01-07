@@ -14,4 +14,6 @@ type UserRepo interface {
 	GetNewUserNumber() (int64, error)
 	// 用户统计
 	UserReport(dto request.ReportQuestDTO) ([]response.LocalUsertVO, error)
+	// 每天新增人数
+	EveryUserReport(dto request.ReportQuestDTO) ([]response.EveryUserVO, error)
 }

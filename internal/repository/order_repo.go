@@ -44,4 +44,6 @@ type OrderRepo interface {
 	QueryOrderNumber(dto request.ReportQuestDTO) (response.OrderNuberReportVO, error)
 	// 营业额统计
 	OrderTurnover(dto request.ReportQuestDTO) ([]response.LocalTurnoverVO, error)
+	// 营业额，平均客单价，有效订单，订单完成率
+	BatchBusinessOrder(dto request.ReportQuestDTO) ([]response.ExcelVO, error)
 }

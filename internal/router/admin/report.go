@@ -23,5 +23,7 @@ func (ws *ReportRouter) InitApiRouter(rg *gin.RouterGroup) {
 		r.GET("/turnoverStatistics", rtCtl.TurnoverStatistics)
 		// 订单统计
 		r.GET("/ordersStatistics", rtCtl.OrdersStatistics)
+		// 导出excel
+		r.GET("/export", rtCtl.ExportExcel)
 	}
 }
